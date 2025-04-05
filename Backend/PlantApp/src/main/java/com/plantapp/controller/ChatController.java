@@ -18,7 +18,7 @@ public class ChatController {
 
     @PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest chatRequest) {
-        ChatResponse response = geminiService.askGemini(chatRequest.getMessage());
+        ChatResponse response = geminiService.askGemini(chatRequest.getMessage(), chatRequest.getContext());
         return ResponseEntity.ok(response);
     }
 }
