@@ -14,9 +14,6 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-
 chat_sessions = {}
 app = FastAPI()
 
@@ -35,22 +32,26 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-
     session_id = request.session_id or str(uuid4())
-
-    initial_prompt = get_prompt(plant_type=request.plant_type, plant_name=request.plant_name)
-
-    chat = client.models.Chat(session_id=session_id, initial_prompt=initial_prompt)
-
 
     if session_id in chat_sessions:
         chat = chat_sessions[session_id]
     else:
-        system_prompt = get_prompt(request.plant_type, request.plant_name)
-        chat = model.start_chat(history=[{"role": "system", "parts": [system_prompt]}])
+        initial_prompt = get_prompt(plant_type=request.plant_type, plant_name=request.plant_name)
+        chat = model.start_chat(history=[{"role": "user", "parts": [initial_prompt]}])
         chat_sessions[session_id] = chat
 
+    # Append the new user message to the history
+    chat.history.append({"role": "user", "parts": [request.user_message]})
+
+    # Send the new message and get the response
     response = chat.send_message(request.user_message)
+
+    # Append the assistant's response to the history
+    chat.history.append({"role": "assistant", "parts": [response.text]})
+
+    # Update the session with the new history
+    chat_sessions[session_id] = chat
 
     return {
         "response": response.text,
