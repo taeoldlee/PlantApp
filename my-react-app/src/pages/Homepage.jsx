@@ -5,6 +5,7 @@ import sunflower from "../assets/sunflower.png"
 import tomato from "../assets/tomato.png"
 import rose from "../assets/rose.png"
 import cactus from "../assets/cactus.png"
+import lily from "../assets/lily.png"
 
 
 export default function LandingPage() {
@@ -69,15 +70,15 @@ export default function LandingPage() {
 
       {/* Simple Preview */}
       <section className="container mx-auto px-4 py-12 mb-12">
-        <div className="bg-green-100 rounded-3xl p-8 max-w-4xl mx-auto">
+        <div className="bg-green-100 rounded-3xl p-8 max-w-4xl mx-auto transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl">
           <div className="flex flex-col items-center text-center">
             <h2 className="text-4xl font-bold text-green-800 mb-6">Meet Your Plant Friends!</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
               <PlantFriend name="Tommy" type="Tomato" color="blue" />
               <PlantFriend name="Rosie" type="Rose" color="pink" />
-              <PlantFriend name="Fern" type="Fern" color="green" />
-              <PlantFriend name="Cactus" type="Cactus" color="teal" />
+              <PlantFriend name="Lily" type="Lily" color="green" />
+              <PlantFriend name="Spike" type="Cactus" color="teal" />
             </div>
 
             <Button className="bg-green-600 hover:bg-green-700 text-white text-3xl px-8 py-6 rounded-full">
@@ -100,6 +101,9 @@ export default function LandingPage() {
               Click Here
             </Link>
           </p>
+          <p className="text-green-300">
+            &copy; 2025 PlantPals. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
@@ -108,7 +112,7 @@ export default function LandingPage() {
 
 function StepCard({ number, icon, title, description }) {
   return (
-    <div className="flex flex-col items-center text-center bg-green-50 p-6 rounded-xl">
+    <div className="flex flex-col items-center text-center bg-green-50 p-6 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.05] hover:shadow-lg">
       <div className="text-2xl font-bold text-white bg-green-600 w-10 h-10 rounded-full flex items-center justify-center mb-4">
         {number}
       </div>
@@ -130,7 +134,7 @@ function PlantFriend({ name, type, color }) {
   const image = {
     blue: tomato,
     pink: rose,
-    green: tomato,
+    green: lily,
     teal: cactus,
   }[color]
 
