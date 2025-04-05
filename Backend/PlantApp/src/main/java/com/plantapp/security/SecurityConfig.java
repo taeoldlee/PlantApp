@@ -12,9 +12,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/chat").authenticated()
-                        .anyRequest().permitAll()).oauth2Login(Customizer.withDefaults());
+                        .requestMatchers("/api/chat").permitAll()
+                        .anyRequest().authenticated());
         return http.build();
     }
 }

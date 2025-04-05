@@ -1,21 +1,17 @@
 package com.plantapp.model;
 
 public class ChatResponse {
+    private String responseMessage;
 
-    private String response;
-
-    public ChatResponse() {}
-
-    public ChatResponse(String response) {
-        this.response = response;
+    public ChatResponse(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+    // Getters and setters
+    public String getResponseMessage() {
+        return responseMessage;
     }
 
-    public String getResponse() {
-        return response;
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
     }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
 }
