@@ -6,7 +6,7 @@ export default function About() {
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100 p-8">
       <h1 className="text-4xl font-bold text-green-800">About PlantPals</h1>
       <Link to="/">
-        <Button className="mt-4 bg-green-600 hover:bg-green-700 text-white">
+        <Button>
           Back to Home
         </Button>
       </Link>

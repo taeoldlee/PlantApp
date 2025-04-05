@@ -1,10 +1,11 @@
 import { Button } from "../components/ui/button"
 import { Leaf, Sprout, MessageCircle, Droplets, ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
+import tomato from "../assets/tomato.png"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
+    <div className="min-h-screen bg-white">
       {/* Super Simple Header */}
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -13,7 +14,7 @@ export default function LandingPage() {
         </div>
         <div className="flex gap-4">
           <Link to="/about">
-            <Button className="bg-green-600 hover:bg-green-700 text-white text-lg rounded-full">
+            <Button className="text-lg rounded-full px-6">
               For Grown-ups
             </Button>
           </Link>
@@ -21,44 +22,40 @@ export default function LandingPage() {
       </header>
 
       {/* Big, Simple Hero */}
-      <section className="container mx-auto px-4 py-8 text-center">
+      <section className="w-full px-4 py-8 text-center bg-sky-300">
         <h2 className="text-4xl md:text-5xl font-bold text-green-800 mb-4">Grow Your Own Plant Friend!</h2>
 
         <div className="flex justify-center my-8">
           <div className="relative w-64 h-64 bg-green-200 rounded-full overflow-hidden">
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-              <img src="/placeholder.svg?height=250&width=250" alt="Happy plant character" className="w-56" />
-            </div>
+              <img src={tomato} className=" w-full" />
           </div>
         </div>
 
-        <Button className="bg-green-600 hover:bg-green-700 text-white text-xl px-8 py-6 rounded-full animate-bounce">
-          Let's Start!
-          <ArrowRight className="ml-2 h-5 w-5" />
+        <Button className="text-xl px-8 rounded-full animate-bounce">
+          <div className="flex items-center">
+            Let's Start! <ArrowRight className="ml-2 h-5 w-5" />
+          </div>
         </Button>
       </section>
 
       {/* Super Simple Steps */}
-      <section className="bg-white py-12">
+      <section className="bg-lime-500 py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <StepCard
               number="1"
               icon={<Leaf className="h-12 w-12 text-green-600" />}
-              title="Pick a Plant"
-              description="Find your perfect plant friend!"
+              title="Pick a Plant!"
             />
             <StepCard
               number="2"
               icon={<MessageCircle className="h-12 w-12 text-green-600" />}
-              title="Chat With It"
-              description="Your plant will talk to you!"
+              title="Chat With It!"
             />
             <StepCard
               number="3"
               icon={<Droplets className="h-12 w-12 text-green-600" />}
-              title="Help It Grow"
-              description="Water it when it's thirsty!"
+              title="Help It Grow!"
             />
           </div>
         </div>
@@ -93,7 +90,7 @@ export default function LandingPage() {
           </div>
           <p className="text-green-300">
             For Parents:{" "}
-            <Link to="#" className="underline">
+            <Link to="/about" className="underline">
               Click Here
             </Link>
           </p>

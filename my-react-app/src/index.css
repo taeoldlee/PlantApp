@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+a {
+  cursor: pointer;
+}
+* {
+    font-family: "Bubblegum Sans", cursive;
+}
