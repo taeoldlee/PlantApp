@@ -1,6 +1,7 @@
 import { Button } from "../components/ui/button"
 import { Leaf, Sprout, MessageCircle, Droplets, ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
+import { HashLink } from 'react-router-hash-link';
 import sunflower from "../assets/sunflower.png"
 import tomato from "../assets/tomato.png"
 import rose from "../assets/rose.png"
@@ -97,9 +98,9 @@ export default function LandingPage() {
           </div>
           <p className="text-green-300">
             For Parents:{" "}
-            <Link to="/about" className="underline">
+            <HashLink to="/about#top" className="underline">
               Click Here
-            </Link>
+            </HashLink>
           </p>
           <p className="text-green-300">
             &copy; 2025 PlantPals. All rights reserved.

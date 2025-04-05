@@ -9,3 +9,7 @@ button {
 * {
     font-family: "Bubblegum Sans", cursive;
 }
+
+html {
+  scroll-behavior: smooth;
+}
