@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
+
+# From auth0 jumpstart guide
+okta:
+  oauth2:
+    issuer: https://dev-lb5fbj3yy853zkl5.us.auth0.com/
+    client-id: DFiCICcsDR7Fpc5TxMBEs7ShVpY2VjSs
+    client-secret: YOUR_CLIENT_SECRET
+
