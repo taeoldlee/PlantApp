@@ -1,7 +1,11 @@
 import { Button } from "../components/ui/button"
 import { Leaf, Sprout, MessageCircle, Droplets, ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
+import sunflower from "../assets/sunflower.png"
 import tomato from "../assets/tomato.png"
+import rose from "../assets/rose.png"
+import cactus from "../assets/cactus.png"
+
 
 export default function LandingPage() {
   return (
@@ -9,12 +13,14 @@ export default function LandingPage() {
       {/* Super Simple Header */}
       <header className="container mx-auto py-6 px-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Sprout className="h-8 w-8 text-green-600" />
-          <h1 className="text-2xl font-bold text-green-800">PlantPals</h1>
+          <Sprout className="h-10 w-10 text-green-600" />
+          <Link to="/">
+          <h1 className="text-3xl font-bold text-green-800 hover:text-green-400">PlantPals</h1>
+          </Link>
         </div>
         <div className="flex gap-4">
           <Link to="/about">
-            <Button className="text-lg rounded-full px-6">
+            <Button className="text-2xl rounded-full px-6">
               For Grown-ups
             </Button>
           </Link>
@@ -27,11 +33,11 @@ export default function LandingPage() {
 
         <div className="flex justify-center my-8">
           <div className="relative w-64 h-64 bg-green-200 rounded-full overflow-hidden">
-              <img src={tomato} className=" w-full" />
+              <img src={sunflower} className="w-[85%] mx-auto block" />
           </div>
         </div>
 
-        <Button className="text-xl px-8 rounded-full animate-bounce">
+        <Button className="text-3xl px-8 rounded-full animate-bounce">
           <div className="flex items-center">
             Let's Start! <ArrowRight className="ml-2 h-5 w-5" />
           </div>
@@ -65,16 +71,16 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 py-12 mb-12">
         <div className="bg-green-100 rounded-3xl p-8 max-w-4xl mx-auto">
           <div className="flex flex-col items-center text-center">
-            <h2 className="text-3xl font-bold text-green-800 mb-6">Meet Your Plant Friends!</h2>
+            <h2 className="text-4xl font-bold text-green-800 mb-6">Meet Your Plant Friends!</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-              <PlantFriend name="Sunny" type="Sunflower" color="yellow" />
+              <PlantFriend name="Tommy" type="Tomato" color="blue" />
               <PlantFriend name="Rosie" type="Rose" color="pink" />
-              <PlantFriend name="Basil" type="Basil" color="green" />
+              <PlantFriend name="Fern" type="Fern" color="green" />
               <PlantFriend name="Cactus" type="Cactus" color="teal" />
             </div>
 
-            <Button className="bg-green-600 hover:bg-green-700 text-white text-xl px-8 py-6 rounded-full">
+            <Button className="bg-green-600 hover:bg-green-700 text-white text-3xl px-8 py-6 rounded-full">
               Find Your Plant Friend Now!
             </Button>
           </div>
@@ -107,7 +113,7 @@ function StepCard({ number, icon, title, description }) {
         {number}
       </div>
       <div className="mb-4">{icon}</div>
-      <h3 className="text-2xl font-bold text-green-800 mb-2">{title}</h3>
+      <h3 className="text-4xl font-bold text-green-800 mb-2">{title}</h3>
       <p className="text-green-700 text-lg">{description}</p>
     </div>
   )
@@ -115,26 +121,25 @@ function StepCard({ number, icon, title, description }) {
 
 function PlantFriend({ name, type, color }) {
   const bgColor = {
-    yellow: "bg-yellow-200",
+    blue: "bg-blue-200",
     pink: "bg-pink-200",
     green: "bg-green-200",
     teal: "bg-teal-200",
   }[color]
 
-  const textColor = {
-    yellow: "text-yellow-800",
-    pink: "text-pink-800",
-    green: "text-green-800",
-    teal: "text-teal-800",
+  const image = {
+    blue: tomato,
+    pink: rose,
+    green: tomato,
+    teal: cactus,
   }[color]
 
   return (
     <div className="flex flex-col items-center">
-      <div className={`w-20 h-20 ${bgColor} rounded-full flex items-center justify-center mb-2`}>
-        <Sprout className={`h-10 w-10 ${textColor}`} />
+      <div className={`w-40 h-40 ${bgColor} rounded-full flex items-center justify-center mb-2 overflow-clip`}>
+        <img src={image} className="w-full object-contain p-2" />
       </div>
-      <h3 className="font-bold text-lg text-green-800">{name}</h3>
-      <p className="text-green-700">{type}</p>
+      <h3 className="font-bold text-3xl text-green-800">{name}</h3>
     </div>
   )
 }

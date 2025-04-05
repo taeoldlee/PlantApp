@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/button"
+import { Leaf, Sprout, MessageCircle, Droplets, ArrowRight } from "lucide-react"
 
 export default function About() {
   return (
