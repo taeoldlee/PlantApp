@@ -39,11 +39,13 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <Button className="text-3xl px-8 rounded-full animate-bounce">
-          <div className="flex items-center">
-            Let's Start! <ArrowRight className="ml-2 h-5 w-5" />
-          </div>
-        </Button>
+        <Link to="/quiz">
+          <Button className="text-3xl px-8 rounded-full animate-bounce">
+            <div className="flex items-center">
+              Let's Start! <ArrowRight className="ml-2 h-5 w-5" />
+            </div>
+          </Button>
+        </Link>
       </section>
 
       {/* Super Simple Steps */}
