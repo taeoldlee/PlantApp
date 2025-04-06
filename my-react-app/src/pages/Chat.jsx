@@ -70,6 +70,7 @@ export default function Chat() {
   const [showDeliveryPrompt, setShowDeliveryPrompt] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
   const [deliveryComplete, setDeliveryComplete] = useState(false)
+  const [postDeliveryMessageCount, setPostDeliveryMessageCount] = useState(0)
 
   const getPlantName = (type) => {
     const names = {
@@ -154,14 +155,19 @@ export default function Chat() {
     }
   }, [plantType])
 
-  const handleDeliverySubmit = (address) => {
+  const handleDeliverySubmit = async (address) => {
     setDeliveryComplete(true)
     setShowDeliveryModal(false)
+    setIsLoading(true)
+    
+    // Add artificial delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
     setMessages(prev => [...prev, {
       sender: "plant",
       text: "Yay! I'm so excited to come live with you! I'll be there soon, and we can grow together in real life! 🌱✨"
     }])
+    setIsLoading(false)
   }
 
   const handleSend = async (e) => {
@@ -173,6 +179,28 @@ export default function Chat() {
     setInputText("")
     setIsLoading(true)
     setMessageCount(prev => prev + 1)
+
+    // Handle the two special messages after delivery
+    if (deliveryComplete && postDeliveryMessageCount < 2) {
+      // Add artificial delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      if (postDeliveryMessageCount === 0) {
+        setMessages(prev => [...prev, {
+          sender: "plant",
+          text: "I'm so happy to be here now! 🏡 But I'm feeling a little thirsty... could you water me? 💧"
+        }])
+        setPostDeliveryMessageCount(1)
+      } else if (postDeliveryMessageCount === 1) {
+        setMessages(prev => [...prev, {
+          sender: "plant",
+          text: "Ahhh, much better now! Thank you for watering me! 💚 I feel refreshed and ready to grow! 🌱"
+        }])
+        setPostDeliveryMessageCount(2)
+      }
+      setIsLoading(false)
+      return
+    }
 
     if (messageCount === 4 && !showDeliveryPrompt && !deliveryComplete) {
       setShowDeliveryPrompt(true)
