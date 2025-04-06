@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "../components/ui/button"
 import { Sprout, Send, ArrowLeft } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
@@ -58,30 +58,101 @@ const plantStyles = {
 
 export default function Chat() {
   const location = useLocation()
-  const plantType = location.state?.plantType || "sunny" // default to sunny if no type passed
+  const plantType = location.state?.plantType || "sunny"
   const plant = plantStyles[plantType]
-
+  
   const [messages, setMessages] = useState([
     { sender: "plant", text: plant.greeting }
   ])
   const [inputText, setInputText] = useState("")
+  const [sessionId, setSessionId] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSend = (e) => {
+  const getPlantName = (type) => {
+    const names = {
+      sunny: "Sunny",
+      tomato: "Tommy",
+      rosy: "Rosie",
+      hardy: "Spike",
+      leafy: "Lily"
+    }
+    return names[type]
+  }
+
+  const handleSend = async (e) => {
     e.preventDefault()
-    if (!inputText.trim()) return
+    if (!inputText.trim() || isLoading) return
 
-    // Add user message
-    setMessages(prev => [...prev, { sender: "user", text: inputText }])
+    // Add user message immediately
+    const userMessage = inputText.trim()
+    setMessages(prev => [...prev, { sender: "user", text: userMessage }])
     setInputText("")
+    setIsLoading(true)
 
-    // Simulate plant response (replace with actual AI response later)
-    setTimeout(() => {
+    // Create an AbortController for timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
+    try {
+      const response = await fetch('https://plantapp-z7dw.onrender.com/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': window.location.origin,
+        },
+        body: JSON.stringify({
+          plant_type: plantType,
+          plant_name: getPlantName(plantType),
+          user_message: userMessage,
+          session_id: sessionId
+        }),
+        signal: controller.signal
+      })
+
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.error) {
+        console.error('Chat error:', data.error)
+        setMessages(prev => [...prev, { 
+          sender: "plant", 
+          text: "Oops! I'm having trouble thinking right now. Can you try again?" 
+        }])
+      } else {
+        setSessionId(data.session_id)
+        setMessages(prev => [...prev, { 
+          sender: "plant", 
+          text: data.response 
+        }])
+      }
+    } catch (error) {
+      console.error('Network error:', error)
+      const errorMessage = error.name === 'AbortError' 
+        ? "Oops! I'm taking too long to respond. Please try again!"
+        : "Oops! I'm having trouble connecting. Can you check your internet?"
+      
       setMessages(prev => [...prev, { 
         sender: "plant", 
-        text: "That's interesting! Tell me more about it! 😊" 
+        text: errorMessage
       }])
-    }, 1000)
+    } finally {
+      setIsLoading(false)
+    }
   }
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    const messageArea = document.querySelector('.message-area')
+    if (messageArea) {
+      messageArea.scrollTop = messageArea.scrollHeight
+    }
+  }, [messages])
 
   return (
     <div className={`min-h-screen ${plant.bg}`}>
@@ -122,8 +193,8 @@ export default function Chat() {
             </h2>
           </div>
 
-          {/* Messages Area */}
-          <div className="h-[400px] overflow-y-auto p-6 space-y-4">
+          {/* Messages Area - added message-area class and loading indicator */}
+          <div className="h-[400px] overflow-y-auto p-6 space-y-4 message-area">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -142,9 +213,20 @@ export default function Chat() {
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className={`${plant.bg} ${plant.text} rounded-2xl p-4 rounded-bl-none`}>
+                  <div className="flex gap-2">
+                    <div className="w-3 h-3 rounded-full bg-current animate-bounce" />
+                    <div className="w-3 h-3 rounded-full bg-current animate-bounce [animation-delay:0.2s]" />
+                    <div className="w-3 h-3 rounded-full bg-current animate-bounce [animation-delay:0.4s]" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Input Area */}
+          {/* Input Area - disabled while loading */}
           <form onSubmit={handleSend} className="p-4 border-t">
             <div className="flex gap-2">
               <input
@@ -152,15 +234,18 @@ export default function Chat() {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type your message here..."
+                disabled={isLoading}
                 className={`
                   flex-1 rounded-full px-6 py-3 text-xl
                   border-2 ${plant.border} focus:outline-none
                   focus:ring-2 focus:ring-offset-2 ${plant.accent}
+                  ${isLoading ? 'opacity-50' : ''}
                 `}
               />
               <Button 
                 type="submit"
-                className={`rounded-full ${plant.accent} ${plant.hover}`}
+                disabled={isLoading}
+                className={`rounded-full ${plant.accent} ${plant.hover} ${isLoading ? 'opacity-50' : ''}`}
               >
                 <Send className="h-8 w-8" />
               </Button>
