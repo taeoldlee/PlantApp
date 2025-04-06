@@ -61,12 +61,10 @@ export default function Chat() {
   const plantType = location.state?.plantType || "sunny"
   const plant = plantStyles[plantType]
   
-  const [messages, setMessages] = useState([
-    { sender: "plant", text: plant.greeting }
-  ])
+  const [messages, setMessages] = useState([])  // Start with empty messages
   const [inputText, setInputText] = useState("")
   const [sessionId, setSessionId] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)  // Start with loading true
 
   const getPlantName = (type) => {
     const names = {
@@ -78,6 +76,60 @@ export default function Chat() {
     }
     return names[type]
   }
+
+  // New function to fetch introduction
+  const fetchIntroduction = async () => {
+    try {
+      const response = await fetch('https://plantapp-z7dw.onrender.com/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Origin': window.location.origin,
+        },
+        body: JSON.stringify({
+          plant_type: plantType,
+          plant_name: getPlantName(plantType),
+          user_message: "Hello!",
+          session_id: null  // Start new session
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.error) {
+        console.error('Chat error:', data.error)
+        setMessages([{ 
+          sender: "plant", 
+          text: plantStyles[plantType].greeting  // Fallback to preset greeting
+        }])
+      } else {
+        setSessionId(data.session_id)
+        setMessages([{ 
+          sender: "plant", 
+          text: data.response 
+        }])
+      }
+    } catch (error) {
+      console.error('Network error:', error)
+      // Fallback to preset greeting if API fails
+      setMessages([{ 
+        sender: "plant", 
+        text: plantStyles[plantType].greeting
+      }])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Use useEffect to fetch introduction when component mounts
+  useEffect(() => {
+    fetchIntroduction()
+  }, [plantType])  // Re-fetch if plant type changes
 
   const handleSend = async (e) => {
     e.preventDefault()
