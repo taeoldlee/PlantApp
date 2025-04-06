@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import google.generativeai as genai
 
-from src.prompt import get_prompt
+from prompt import get_prompt
 
 # Load environment variables from .env file
 load_dotenv()
