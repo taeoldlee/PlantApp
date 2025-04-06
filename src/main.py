@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import google.generativeai as genai
 
-from prompt import get_prompt
+from src.prompt import get_prompt
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
