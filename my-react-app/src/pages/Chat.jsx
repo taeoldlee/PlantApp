@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "../components/ui/button"
 import { Sprout, Send, ArrowLeft } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
@@ -60,11 +60,12 @@ export default function Chat() {
   const location = useLocation()
   const plantType = location.state?.plantType || "sunny"
   const plant = plantStyles[plantType]
+  const fetchingRef = useRef(false)
   
-  const [messages, setMessages] = useState([])  // Start with empty messages
+  const [messages, setMessages] = useState([])
   const [inputText, setInputText] = useState("")
   const [sessionId, setSessionId] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)  // Start with loading true
+  const [isLoading, setIsLoading] = useState(true)
 
   const getPlantName = (type) => {
     const names = {
@@ -77,8 +78,13 @@ export default function Chat() {
     return names[type]
   }
 
-  // New function to fetch introduction
-  const fetchIntroduction = async () => {
+  const fetchIntroduction = async (abortController) => {
+    if (fetchingRef.current) return
+    fetchingRef.current = true
+
+    setIsLoading(true)
+    setMessages([])
+    
     try {
       const response = await fetch('https://plantapp-z7dw.onrender.com/chat', {
         method: 'POST',
@@ -90,9 +96,10 @@ export default function Chat() {
         body: JSON.stringify({
           plant_type: plantType,
           plant_name: getPlantName(plantType),
-          user_message: "Hello!",
-          session_id: null  // Start new session
-        })
+          user_message: "Hi! Please introduce yourself once.",
+          session_id: null
+        }),
+        signal: abortController.signal
       })
 
       if (!response.ok) {
@@ -101,35 +108,47 @@ export default function Chat() {
 
       const data = await response.json()
 
-      if (data.error) {
-        console.error('Chat error:', data.error)
-        setMessages([{ 
-          sender: "plant", 
-          text: plantStyles[plantType].greeting  // Fallback to preset greeting
-        }])
-      } else {
-        setSessionId(data.session_id)
-        setMessages([{ 
-          sender: "plant", 
-          text: data.response 
-        }])
+      if (!abortController.signal.aborted) {
+        if (data.error) {
+          console.error('Chat error:', data.error)
+          setMessages([{ 
+            sender: "plant", 
+            text: plantStyles[plantType].greeting
+          }])
+        } else {
+          setSessionId(data.session_id)
+          setMessages([{ 
+            sender: "plant", 
+            text: data.response 
+          }])
+        }
       }
     } catch (error) {
-      console.error('Network error:', error)
-      // Fallback to preset greeting if API fails
-      setMessages([{ 
-        sender: "plant", 
-        text: plantStyles[plantType].greeting
-      }])
+      if (!abortController.signal.aborted) {
+        console.error('Network error:', error)
+        setMessages([{ 
+          sender: "plant", 
+          text: plantStyles[plantType].greeting
+        }])
+      }
     } finally {
-      setIsLoading(false)
+      if (!abortController.signal.aborted) {
+        setIsLoading(false)
+        fetchingRef.current = false
+      }
     }
   }
 
-  // Use useEffect to fetch introduction when component mounts
   useEffect(() => {
-    fetchIntroduction()
-  }, [plantType])  // Re-fetch if plant type changes
+    const abortController = new AbortController()
+    fetchingRef.current = false
+    fetchIntroduction(abortController)
+
+    return () => {
+      abortController.abort()
+      fetchingRef.current = false
+    }
+  }, [plantType])
 
   const handleSend = async (e) => {
     e.preventDefault()
@@ -219,8 +238,10 @@ export default function Chat() {
         <Link to="/quiz">
           <Button 
             className={`text-xl rounded-full px-6 ${plant.accent} ${plant.hover}`}>
+            <div className="flex items-center">
             <ArrowLeft className="mr-2 h-5 w-5" />
             New Friend
+            </div>
           </Button>
         </Link>
       </header>
@@ -245,7 +266,7 @@ export default function Chat() {
             </h2>
           </div>
 
-          {/* Messages Area - added message-area class and loading indicator */}
+          {/* Messages Area */}
           <div className="h-[400px] overflow-y-auto p-6 space-y-4 message-area">
             {messages.map((message, index) => (
               <div
