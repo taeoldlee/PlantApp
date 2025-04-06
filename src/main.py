@@ -41,19 +41,23 @@ async def chat(request: ChatRequest):
         chat = model.start_chat(history=[{"role": "user", "parts": [initial_prompt]}])
         chat_sessions[session_id] = chat
 
-    # Append the new user message to the history
-    chat.history.append({"role": "user", "parts": [request.user_message]})
+    try:
+        # Append the new user message to the history
+        chat.history.append({"role": "user", "parts": [request.user_message]})
 
-    # Send the new message and get the response
-    response = chat.send_message(request.user_message)
+        # Send the new message and get the response
+        response = chat.send_message(request.user_message)
 
-    # Append the assistant's response to the history
-    chat.history.append({"role": "assistant", "parts": [response.text]})
+        # Append the assistant's response to the history
+        chat.history.append({"role": "assistant", "parts": [response.text]})
 
-    # Update the session with the new history
-    chat_sessions[session_id] = chat
+        # Update the session with the new history
+        chat_sessions[session_id] = chat
 
-    return {
-        "response": response.text,
-        "session_id": session_id
-    }
+        return {
+            "response": response.text,
+            "session_id": session_id
+        }
+    except Exception as e:
+        print(f"Error processing chat: {e}")
+        return {"error": str(e), "session_id": session_id}
