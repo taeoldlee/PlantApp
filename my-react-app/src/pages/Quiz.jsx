@@ -23,7 +23,7 @@ const questions = [
   },
   {
     id: 2,
-    question: "Where would you like to hang out?",
+    question: "Where do you like to play?",
     options: [
       { text: "Sunny Window", value: "sunny", icon: "🪟" },
       { text: "Cozy Corner", value: "rosy", icon: "🛋️" },
@@ -88,6 +88,7 @@ export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState([])
   const [result, setResult] = useState(null)
+  const [plantType, setPlantType] = useState(null)
 
   const handleAnswer = (answer) => {
     const newAnswers = [...answers, answer]
@@ -96,11 +97,21 @@ export default function Quiz() {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
-      // Simple matching logic - can be made more sophisticated
-      const mostFrequent = newAnswers.reduce((a, b) =>
-        newAnswers.filter(v => v === a).length >= newAnswers.filter(v => v === b).length ? a : b
-      )
-      setResult(results[mostFrequent] || results.hardy)
+      // Calculate most frequent answer
+      const frequency = {}
+      let maxFreq = 0
+      let mostFrequent = 'hardy' // default
+
+      newAnswers.forEach(value => {
+        frequency[value] = (frequency[value] || 0) + 1
+        if (frequency[value] > maxFreq) {
+          maxFreq = frequency[value]
+          mostFrequent = value
+        }
+      })
+
+      setPlantType(mostFrequent)
+      setResult(results[mostFrequent])
     }
   }
 
@@ -108,6 +119,7 @@ export default function Quiz() {
     setCurrentQuestion(0)
     setAnswers([])
     setResult(null)
+    setPlantType(null)
   }
 
   return (
@@ -180,9 +192,14 @@ export default function Quiz() {
               </p>
 
               <div className="space-y-4">
-                <Button className="text-2xl px-8 py-4 rounded-full">
-                  Start Chatting!
-                </Button>
+                <Link 
+                  to="/chat" 
+                  state={{ plantType: plantType }}
+                >
+                  <Button className="text-2xl px-8 py-4 rounded-full">
+                    Start Chatting!
+                  </Button>
+                </Link>
                 
                 <button
                   onClick={resetQuiz}

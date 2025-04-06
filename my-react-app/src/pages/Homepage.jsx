@@ -83,10 +83,11 @@ export default function LandingPage() {
               <PlantFriend name="Lily" type="Lily" color="green" />
               <PlantFriend name="Spike" type="Cactus" color="teal" />
             </div>
-
+          <Link to="/quiz">
             <Button className="bg-green-600 hover:bg-green-700 text-white text-3xl px-8 py-6 rounded-full">
               Find Your Plant Friend Now!
             </Button>
+          </Link>
           </div>
         </div>
       </section>
