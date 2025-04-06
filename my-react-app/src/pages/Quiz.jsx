@@ -68,7 +68,7 @@ const results = {
     image: rose,
   },
   leafy: {
-    name: "Lily the Peace Lily",
+    name: "Lily the Water Lily",
     description: "A calm and peaceful friend who helps you relax! Lily is great at keeping secrets.",
     image: lily,
   },
@@ -203,7 +203,7 @@ export default function Quiz() {
                 
                 <button
                   onClick={resetQuiz}
-                  className="block w-full text-green-600 underline text-lg"
+                  className="block w-full text-green-600 underline text-lg mt-5"
                 >
                   Try Again
                 </button>
