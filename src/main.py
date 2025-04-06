@@ -37,23 +37,15 @@ async def chat(request: ChatRequest):
     if session_id in chat_sessions:
         chat = chat_sessions[session_id]
     else:
-        initial_prompt = get_prompt(plant_type=request.plant_type, plant_name=request.plant_name)
+        initial_prompt = get_prompt(
+            plant_type=request.plant_type,
+            plant_name=request.plant_name
+        )
         chat = model.start_chat(history=[{"role": "user", "parts": [initial_prompt]}])
         chat_sessions[session_id] = chat
 
     try:
-        # Append the new user message to the history
-        chat.history.append({"role": "user", "parts": [request.user_message]})
-
-        # Send the new message and get the response
         response = chat.send_message(request.user_message)
-
-        # Append the assistant's response to the history
-        chat.history.append({"role": "assistant", "parts": [response.text]})
-
-        # Update the session with the new history
-        chat_sessions[session_id] = chat
-
         return {
             "response": response.text,
             "session_id": session_id
