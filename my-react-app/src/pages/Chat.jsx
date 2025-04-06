@@ -66,6 +66,10 @@ export default function Chat() {
   const [inputText, setInputText] = useState("")
   const [sessionId, setSessionId] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [messageCount, setMessageCount] = useState(0)
+  const [showDeliveryPrompt, setShowDeliveryPrompt] = useState(false)
+  const [showDeliveryModal, setShowDeliveryModal] = useState(false)
+  const [deliveryComplete, setDeliveryComplete] = useState(false)
 
   const getPlantName = (type) => {
     const names = {
@@ -150,15 +154,29 @@ export default function Chat() {
     }
   }, [plantType])
 
+  const handleDeliverySubmit = (address) => {
+    setDeliveryComplete(true)
+    setShowDeliveryModal(false)
+    
+    setMessages(prev => [...prev, {
+      sender: "plant",
+      text: "Yay! I'm so excited to come live with you! I'll be there soon, and we can grow together in real life! 🌱✨"
+    }])
+  }
+
   const handleSend = async (e) => {
     e.preventDefault()
     if (!inputText.trim() || isLoading) return
 
-    // Add user message immediately
     const userMessage = inputText.trim()
     setMessages(prev => [...prev, { sender: "user", text: userMessage }])
     setInputText("")
     setIsLoading(true)
+    setMessageCount(prev => prev + 1)
+
+    if (messageCount === 4 && !showDeliveryPrompt && !deliveryComplete) {
+      setShowDeliveryPrompt(true)
+    }
 
     // Create an AbortController for timeout
     const controller = new AbortController()
@@ -201,6 +219,15 @@ export default function Chat() {
           sender: "plant", 
           text: data.response 
         }])
+        
+        if (messageCount === 4 && !showDeliveryPrompt && !deliveryComplete) {
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              sender: "plant",
+              text: "Hey friend! We've been chatting for a while now, and I really enjoy talking with you! Would you like to grow me in your home? We could be real-life plant pals! 🌱💚"
+            }])
+          }, 1000)
+        }
       }
     } catch (error) {
       console.error('Network error:', error)
@@ -224,6 +251,83 @@ export default function Chat() {
       messageArea.scrollTop = messageArea.scrollHeight
     }
   }, [messages])
+
+  const DeliveryModal = () => (
+    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+      <div className={`bg-white rounded-3xl p-6 max-w-md w-full ${plant.text} shadow-xl pointer-events-auto transform transition-all duration-200 scale-100 hover:scale-[1.02]`}>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-2xl font-bold">Get Your Plant Friend!</h3>
+          <button 
+            onClick={() => setShowDeliveryModal(false)}
+            className="text-gray-500 hover:text-gray-700 text-xl"
+          >
+            ×
+          </button>
+        </div>
+        <form onSubmit={(e) => {
+          e.preventDefault()
+          const formData = new FormData(e.target)
+          handleDeliverySubmit({
+            name: formData.get('name'),
+            address: formData.get('address'),
+            city: formData.get('city'),
+            state: formData.get('state'),
+            zip: formData.get('zip')
+          })
+        }}>
+          <div className="space-y-4">
+            <input
+              name="name"
+              placeholder="Your Name"
+              className={`w-full rounded-full px-4 py-2 border-2 ${plant.border} text-lg focus:outline-none focus:ring-2`}
+              required
+            />
+            <input
+              name="address"
+              placeholder="Street Address"
+              className={`w-full rounded-full px-4 py-2 border-2 ${plant.border} text-lg focus:outline-none focus:ring-2`}
+              required
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                name="city"
+                placeholder="City"
+                className={`rounded-full px-4 py-2 border-2 ${plant.border} text-lg focus:outline-none focus:ring-2`}
+                required
+              />
+              <input
+                name="state"
+                placeholder="State"
+                className={`rounded-full px-4 py-2 border-2 ${plant.border} text-lg focus:outline-none focus:ring-2`}
+                required
+              />
+            </div>
+            <input
+              name="zip"
+              placeholder="ZIP Code"
+              className={`w-full rounded-full px-4 py-2 border-2 ${plant.border} text-lg focus:outline-none focus:ring-2`}
+              required
+            />
+          </div>
+          <div className="flex gap-2 mt-6">
+            <Button
+              type="button"
+              onClick={() => setShowDeliveryModal(false)}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-black rounded-full"
+            >
+              Maybe Later
+            </Button>
+            <Button
+              type="submit"
+              className={`flex-1 ${plant.accent} ${plant.hover} rounded-full`}
+            >
+              Get My Plant! 🌱
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
 
   return (
     <div className={`min-h-screen ${plant.bg}`}>
@@ -283,6 +387,18 @@ export default function Chat() {
                   `}
                 >
                   <p className="text-xl">{message.text}</p>
+                  {showDeliveryPrompt && 
+                   index === messages.length - 1 && 
+                   message.sender === "plant" && 
+                   !deliveryComplete && 
+                   message.text.includes("Would you like to grow me in your home?") && (
+                    <Button
+                      onClick={() => setShowDeliveryModal(true)}
+                      className={`mt-4 ${plant.accent} ${plant.hover} rounded-full text-white`}
+                    >
+                      Yes, I want to grow you! 🌱
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -326,6 +442,9 @@ export default function Chat() {
           </form>
         </div>
       </main>
+
+      {/* Delivery Modal */}
+      {showDeliveryModal && <DeliveryModal />}
     </div>
   )
 }
