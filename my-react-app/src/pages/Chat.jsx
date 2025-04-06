@@ -202,7 +202,7 @@ export default function Chat() {
       return
     }
 
-    if (messageCount === 4 && !showDeliveryPrompt && !deliveryComplete) {
+    if (messageCount === 2 && !showDeliveryPrompt && !deliveryComplete) {
       setShowDeliveryPrompt(true)
     }
 
@@ -248,7 +248,7 @@ export default function Chat() {
           text: data.response 
         }])
         
-        if (messageCount === 4 && !showDeliveryPrompt && !deliveryComplete) {
+        if (messageCount === 2 && !showDeliveryPrompt && !deliveryComplete) {
           setTimeout(() => {
             setMessages(prev => [...prev, {
               sender: "plant",
