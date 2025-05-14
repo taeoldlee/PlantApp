@@ -106,7 +106,7 @@ export default function LandingPage() {
             </HashLink>
           </p>
           <p className="text-green-300">
-            &copy; 2025 PlantPals. All rights reserved.
+          Nathan Hogg, Jerry Zhou, Lance Locker, Taeyoung Lee, &copy; 2025 PlantPals. All rights reserved.
           </p>
         </div>
       </footer>
